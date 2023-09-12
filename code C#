@@ -1,1 +1,202 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace bài_tập_lập_trình_hướng_đối_tượng
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            TestMangSinhVien();
+        }
+        static void TestMangSinhVien()
+        {
+            ManSinhVien dssv = new ManSinhVien();
+            dssv.Nhap();
+            Console.WriteLine("\n danh sach sinh vien: ");
+            dssv.Xuat();
+        }
+    }
+}
+LỚP SINH VIÊN 
+
+
+using System;
+using System.CodeDom;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace bài_tập_lập_trình_hướng_đối_tượng
+{
+    internal class Sinh_Vien
+    {
+        private string maSo;
+        private string hoTen;
+        private string chuyenNganh;
+        private int namSinh;
+        private float diemTb;
+        private string loai;
+
+        public Sinh_Vien() { }
+        public Sinh_Vien(string maSo, string hoTen, string chuyenNganh, int namSinh, float diemTb, string loai)
+        {
+            this.maSo = maSo;
+            this.hoTen = hoTen;
+            this.chuyenNganh = chuyenNganh;
+            this.namSinh = namSinh;
+            this.diemTb = diemTb;
+            this.loai = loai;
+        }
+        public string MaSo
+        {
+            get { return maSo; }
+            set { maSo = value; }
+        }
+        public string HoTen
+        {
+            get { return hoTen; }
+            set { hoTen = value; }
+        }
+        public string Chuyennganh
+        {
+            get { return chuyenNganh;}
+            set { chuyenNganh = value;}
+        }
+        public int namsinh
+        {
+            get { return namSinh; }
+            set { namsinh = value; }
+        }
+        public float DiemTb
+        {
+            get { return diemTb;}
+            set { diemTb = value; }
+        }
+        public string Loai
+        {
+            get { return loai; }
+        }
+        public bool KiemTraNamSinh(int ns)
+        {
+            return ns >= 17 && ns <= 70;
+        }
+
+        public bool KiemTraDiemTB(float dtb)
+        {
+            return dtb >= 0 && dtb <= 10;
+        }
+        public void Nhap()
+        {
+            Console.Write("Nhập Mã số sinh viên: ");
+            maSo = Console.ReadLine();
+
+            Console.Write("Nhập Họ và Tên: ");
+            hoTen = Console.ReadLine();
+
+            Console.Write("Nhập Chuyên ngành: ");
+            chuyenNganh = Console.ReadLine();
+
+            // Kiểm tra và nhập năm sinh
+            do
+            {
+                Console.Write("Nhập Năm sinh: ");
+            } while (!int.TryParse(Console.ReadLine(), out namSinh) || !KiemTraNamSinh(namSinh));
+
+            // Kiểm tra và nhập điểm trung bình tích lũy
+            do
+            {
+                Console.Write("Nhập Điểm trung bình tích lũy: ");
+            } while (!float.TryParse(Console.ReadLine(), out diemTb) || !KiemTraDiemTB(diemTb));
+
+            XepLoai();
+        }
+
+        public void Xuat()
+        {
+            Console.WriteLine("Mã số sinh viên: " + maSo);
+            Console.WriteLine("Họ và Tên: " + hoTen);
+            Console.WriteLine("Chuyên ngành: " + chuyenNganh);
+            Console.WriteLine("Năm sinh: " + namSinh);
+            Console.WriteLine("Điểm trung bình tích lũy: " + diemTb);
+            Console.WriteLine("Xếp loại: " + loai) ;
+        }
+        public void XepLoai()
+        {
+            if (diemTb < 5)
+                loai = "Kém";
+            else if (diemTb < 7)
+                loai = "Trung bình";
+            else if (diemTb < 8)
+                loai = "Khá";
+            else
+                loai = "Giỏi";
+        }
+    }
+}
+
+
+
+LOPW MANGV SINH VIEN 
+
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace bài_tập_lập_trình_hướng_đối_tượng
+{
+    internal class ManSinhVien
+    {
+        private Sinh_Vien[] danhSachSinhVien;
+        public ManSinhVien()
+        {
+            danhSachSinhVien = null;
+        }
+        public void Nhap()
+        {
+            Console.Write("Nhập số lượng sinh viên: ");
+            int n;
+            while (!int.TryParse(Console.ReadLine(), out n) || n <= 0 || n > 1000000)
+            {
+                Console.Write("Nhập lại số lượng sinh viên (0 < n <= 1000000): ");
+            }
+
+            danhSachSinhVien = new Sinh_Vien[n];
+
+            for (int i = 0; i < n; i++)
+            {
+                Console.WriteLine($"Nhập thông tin cho sinh viên thứ {i + 1}:");
+                danhSachSinhVien[i] = new Sinh_Vien();
+                danhSachSinhVien[i].Nhap();
+            }
+        }
+
+        public void Xuat()
+        {
+            if (danhSachSinhVien == null || danhSachSinhVien.Length == 0)
+            {
+                Console.WriteLine("Danh sách sinh viên trống.");
+            }
+            else
+            {
+                foreach (var sv in danhSachSinhVien)
+                {
+                    sv.Xuat();
+                    Console.WriteLine();
+                }
+            }
+        }
+    }
+}
+
+
+
 
