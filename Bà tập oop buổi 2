@@ -1,46 +1,174 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <link rel="stylesheet" href="index.css" />
-    <title>HASH TECHIE OFFICIAL</title>
-  </head>
-  <body>
-    <section>
-      <div class="form-box">
-        <div class="form-value">
-          <form action="">
-            <h2>Login</h2>
-            <div class="inputbox">
-              <ion-icon name="mail-outline"></ion-icon>
-              <input type="email" required />
-              <label for="">Email</label>
-            </div>
-            <div class="inputbox">
-              <ion-icon name="lock-closed-outline"></ion-icon>
-              <input type="password" required />
-              <label for="">Password</label>
-            </div>
-            <div class="forget">
-              <label for=""
-                ><input type="checkbox" />Remember Me
-                <a href="#">Forget Password</a></label
-              >
-            </div>
-            <button>Log in</button>
-            <div class="register">
-              <p>Don't have a account <a href="#">Register</a></p>
-            </div>
-          </form>
-        </div>
-      </div>
-    </section>
-    <script
-      type="module"
-      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
-    ></script>
-    <script
-      nomodule
-      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
-    ></script>
-  </body>
-</html>
+using System;
+
+namespace BaiTap2
+{
+    public class IntArray
+    {
+        private int[] arr;
+
+        // Property
+        public int this[int index]
+        {
+            get { return arr[index]; }
+            set { arr[index] = value; }
+        }
+
+        // Constructors
+        public IntArray()
+        {
+            // Default constructor
+        }
+
+        public IntArray(int k)
+        {
+            // Parameterized constructor to generate random values
+            Random rand = new Random();
+            arr = new int[k];
+            for (int i = 0; i < k; i++)
+            {
+                arr[i] = rand.Next(1, 201); // Random values between 1 and 200
+            }
+        }
+
+        public IntArray(int[] a)
+        {
+            // Parameterized constructor to copy an existing array
+            arr = new int[a.Length];
+            Array.Copy(a, arr, a.Length);
+        }
+
+        public IntArray(IntArray obj)
+        {
+            // Copy constructor
+            arr = new int[obj.arr.Length];
+            Array.Copy(obj.arr, arr, obj.arr.Length);
+        }
+
+        // Input and output methods
+        public void Nhap()
+        {
+            Console.Write("Nhap kich thuoc mang: ");
+            int k = int.Parse(Console.ReadLine());
+            arr = new int[k];
+            for (int i = 0; i < k; i++)
+            {
+                Console.Write($"Nhap phan tu thu {i + 1}: ");
+                arr[i] = int.Parse(Console.ReadLine());
+            }
+        }
+
+        public void Xuat()
+        {
+            Console.WriteLine("Mang:");
+            foreach (int item in arr)
+            {
+                Console.Write(item + " ");
+            }
+            Console.WriteLine();
+        }
+
+        // Sequential Search
+        public int TimTuanTu(int x)
+        {
+            int n = arr.Length;
+            for (int i = 0; i < n; i++)
+            {
+                if (arr[i] == x)
+                {
+                    return i;
+                }
+            }
+            return -1; // Not found
+        }
+
+        // Binary Search
+        public int TimNhiPhan(int x)
+        {
+            int left = 0;
+            int right = arr.Length - 1;
+
+            while (left <= right)
+            {
+                int mid = left + (right - left) / 2;
+
+                if (arr[mid] == x)
+                {
+                    return mid; // Found
+                }
+
+                if (arr[mid] < x)
+                {
+                    left = mid + 1;
+                }
+                else
+                {
+                    right = mid - 1;
+                }
+            }
+
+            return -1; // Not found
+        }
+    }
+
+
+
+    class Program
+    {
+        static void TestTimTuanTu()
+        {
+            Console.Write("Nhap so luong phan tu mang: ");
+            int k = int.Parse(Console.ReadLine());
+            IntArray obj = new IntArray(k);
+            Console.WriteLine("Cac phan tu mang:");
+            obj.Xuat();
+
+            Console.Write("\nGia tri can tim x = ");
+            int x = int.Parse(Console.ReadLine());
+
+            int result = obj.TimTuanTu(x);
+            if (result == -1)
+            {
+                Console.WriteLine("Khong ton tai {0} trong mang!", x);
+            }
+            else
+            {
+                Console.WriteLine("Tim thay {0} tai vi tri {1}", x, result);
+            }
+        }
+
+
+
+        static void TestTimNhiPhan()
+        {
+            Console.Write("Nhap so luong phan tu mang: ");
+            int k = int.Parse(Console.ReadLine());
+            IntArray obj = new IntArray(k);
+            Console.WriteLine("Cac phan tu mang:");
+            obj.Xuat();
+
+            Console.Write("\nGia tri can tim x = ");
+            int x = int.Parse(Console.ReadLine());
+
+            // Chắc chắn rằng mảng đã được sắp xếp trước khi tìm kiếm nhị phân
+            Array.Sort(obj);
+
+            int result = obj.TimNhiPhan(x);
+            if (result == -1)
+            {
+                Console.WriteLine("Khong ton tai {0} trong mang!", x);
+            }
+            else
+            {
+                Console.WriteLine("Tim thay {0} tai vi tri {1}", x, result);
+            }
+        }
+
+
+
+        static void Main(string[] args)
+        {
+            // TestTimTuanTu();
+            // TestTimNhiPhan();
+        }
+    }
+}
