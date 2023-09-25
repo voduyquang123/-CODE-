@@ -1,0 +1,367 @@
+
+
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading;
+using System.Threading;
+using System.Resources;
+
+namespace BaiTap3HDH
+{
+    public partial class Form1 : Form
+    {
+        Stream myStream;
+        private int i;
+        private MyThread[] threadLst;
+        private const int xCell = 30;
+        private const int yCell = 30;
+        private const int xMax = 25;
+        private const int yMax = 20;
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+            //tạo ₫ối tượng quản lý việc truy xuất tài nguyên trong project
+            System.Reflection.Assembly MyAssembly =
+           System.Reflection.Assembly.GetExecutingAssembly();
+            //Lặp thiết lập trạng thái ban ₫ầu cho 26 thread từ A-Z
+            for(i = 0; i < 26; i++)
+            {
+
+                threadLst[i] = new MyThread(rnd, xMax, yMax);
+                threadLst[i].Stop = threadLst[i].Suspend = threadLst[i].Start = false;
+                char c = (char)(i + 65);
+                //₫ọc bitmap miêu tả thread c từ file
+                MyAssembly.GetManifestResourceStream("ThreadDemo.Resources.Image" + c.ToString() +
+                ".bmp");
+                threadLst[i].Pic = new Bitmap(myStream);
+                threadLst[i].Xmax = 25;
+                threadLst[i].Ymax = 20;
+            }
+            ClientSize = new Size(25 * 30, 20 * 30);
+            this.Location = new Point(0, 0);
+            this.BackColor = Color.Black;
+        }
+
+
+        //hàm xử lý gỏ phím của user ₫ể quản lý thread 
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            //xác ₫ịnh mã phím ấn, nếu không phải từ A-Z thì phớt lờ
+            int newch = e.KeyValue;
+            if (newch < 0x41 || newch > 0x5a) return;
+            //xác ₫ịnh chức năng mà user muốn và thực hiện
+            if (e.Control && e.Shift)
+            { //kill thread
+              // dừng Thread
+                threadLst[newch - 65].Start = false;
+            }
+            else if (e.Control)
+            { //giảm ₫ộ ưu tiên tối thiểu
+                threadLst[newch - 65].t.Priority = ThreadPriority.Lowest;
+                MessageBox.Show(threadLst[newch - 65].t.Priority.ToString());
+            }
+            else if (e.Control && e.Alt)
+            { //tạm dừng thread
+                if (threadLst[newch - 65].Start && !threadLst[newch - 65].Suspend)
+                {
+                    threadLst[newch - 65].t.Suspend();
+                    threadLst[newch - 65].Suspend = true;
+
+                }
+            }
+            else if (e.Alt)
+            { //cho thread chạy lại
+                if (threadLst[newch - 65].Start && threadLst[newch - 65].Suspend)
+                {
+                    threadLst[newch - 65].t.Resume();
+                    threadLst[newch - 65].Suspend = false;
+                }
+            }
+            else if (e.Shift)
+            { //tăng ₫ộ ưu tiên tối ₫a
+                threadLst[newch - 65].t.Priority = ThreadPriority.Highest;
+                MessageBox.Show(threadLst[newch - 65].t.Priority.ToString());
+            }
+
+            else
+            { //tạo mới thread và bắt ₫ầu chạy
+                if (!threadLst[newch - 65].Start)
+                {   
+                    threadLst[newch - 65].Start = true;
+                    threadLst[newch - 65].Suspend = false;
+                    threadLst[newch - 65].t = new Thread(new
+                   ParameterizedThreadStart(Running));
+                    if (newch == 65) threadLst[newch - 65].t.Priority = ThreadPriority.Highest;
+                    else threadLst[newch - 65].t.Priority = ThreadPriority.Lowest;
+                    threadLst[newch - 65].t.Start(threadLst[newch - 65]);
+                }
+            }
+        }
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            int i;
+            //lặp kiểm tra xem có thread con nào còn chạy không, nếu có thì xóa nó
+            for (i = 0; i < 26; i++)
+                if (threadLst[i].Start)
+                {
+                    threadLst[i].Start = false;
+                    while (!threadLst[i].Stop) ;
+                }
+        }
+
+        private Random rnd = new Random();
+        private Stream mystream;
+        private void MySleep(long count)
+        {
+            long i, j, k = 0;
+            for (i = 0; i < count; i++)
+            {
+                for (j = 0; j < 64000; j++)
+                {
+                    k = k + 1;
+                }
+            }
+        }
+
+        private void Running(object obj)
+        {
+            MyThread p = (MyThread)obj;
+            Graphics g = this.CreateGraphics();
+            Brush brush = new SolidBrush(Color.FromArgb(0, 0, 0));
+            int x1, y1;
+            int x2, y2;
+            int x, y;
+            bool kq = true;
+
+            try
+            {
+                while (p.Start)
+                {
+                    x1 = p.Pos.X; y1 = p.Pos.Y;
+                    g.DrawImage(p.Pic, xCell * x1, yCell * y1);
+                    Color c = p.Pic.GetPixel(1, 1);
+                    int yR, yG, yB;
+                    if (c.R > 128) yR = 0; else yR = 255;
+                    if (c.G > 128) yG = 0; else yG = 255;
+                    if (c.B > 128) yB = 0; else yB = 255;
+                    Pen pen = new Pen(Color.FromArgb(yR, yG, yB), 2);
+                    if (p.tx >= 0 && p.ty >= 0)
+                    {
+                        x = xCell * x1 + xCell - 2;
+                        y = yCell * y1 + yCell - 2;
+                        g.DrawLine(pen, x, y, x - 10, y);
+                        g.DrawLine(pen, x, y, x, y - 10);
+                    }
+                    else if (p.tx >= 0 && p.ty < 0)
+                    {
+                        x = xCell * x1 + xCell - 2;
+                        y = yCell * y1 + 2;
+                        g.DrawLine(pen, x, y, x - 10, y);
+                        g.DrawLine(pen, x, y, x, y + 10);
+                    }
+                    else if (p.tx < 0 && p.ty >= 0)
+                    {
+                        x = xCell * x1 + 2;
+                        y = yCell * y1 + yCell - 2;
+                        g.DrawLine(pen, x, y, x + 10, y);
+                        g.DrawLine(pen, x, y, x, y - 10);
+                    }
+                    else
+                    {
+                        x = xCell * x1 + 2;
+                        y = yCell * y1 + 2;
+                        g.DrawLine(pen, x, y, x + 10, y);
+                        g.DrawLine(pen, x, y, x, y + 10);
+                    }
+
+                    MySleep(500);
+
+                    p.AdjustPosition();
+                    x2 = p.Pos.X; y2 = p.Pos.Y;
+
+                    g.FillRectangle(brush, xCell * x1, yCell * y1, xCell, yCell);
+
+                    if (kq == false && p.Start == false)
+                    {
+                        p.t.Abort();
+                        p.Stop = true;
+                        return;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                p.t.Abort();
+            }
+
+            x1 = p.Pos.X; y1 = p.Pos.Y;
+            g.FillRectangle(brush, xCell * x1, yCell * y1, xCell, yCell);
+            p.Stop = true;
+            p.t.Abort();
+        }
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Drawing;
+
+namespace BaiTap3HDH
+{
+    internal class MyThread
+    {
+
+        const double PI = 3.1416;
+        public Thread t;
+        public bool Start;
+        public bool Stop;
+        public bool Suspend;
+        public bool WaitOne = false;
+        public Bitmap Pic;
+        internal int Xmax;
+        internal int Ymax;
+        public Point Pos;
+        double dblGocChay;
+        internal double tx, ty;
+
+        public MyThread(Random rnd, int xMax, int yMax)
+        {
+            Xmax = xMax; Ymax = yMax;
+            Pos.X = (int)(rnd.Next(0, Xmax));
+            Pos.Y = (int)(rnd.Next(0, Ymax));
+            dblGocChay = AdjustAngle(rnd.Next(0, 360));
+        }
+
+        double AdjustAngle(double dblAngle)
+        {
+            double angle = dblAngle;
+            if (0 <= angle && angle < 90) return 45;
+            if (90 <= angle && angle < 180) return 135;
+            if (180 <= angle && angle < 270) return 225;
+            if (270 <= angle) return 315;
+            return angle;
+        }
+
+        double ReflectAngleX(double dblAngle)
+        {
+            double angle;
+            if (dblAngle > 0 && dblAngle < 180) angle = 180 - dblAngle;
+            else angle = 180 + 360 - dblAngle;
+            return AdjustAngle(angle);
+        }
+
+        double ReflectAngleY(double dblAngle)
+        {
+            return AdjustAngle(360 - dblAngle);
+        }
+
+        public void AdjustPosition()
+        {
+            int x, y;
+            x = Pos.X;
+            y = Pos.Y;
+
+            if (x == 0 || x == Xmax - 1 || y == 0 || y == Ymax - 1)
+            {
+                if (x == 0 || x == Xmax - 1)
+                {
+                    dblGocChay = ReflectAngleX(dblGocChay);
+                }
+                else if (y == 0 || y == Ymax - 1)
+                {
+                    dblGocChay = ReflectAngleY(dblGocChay);
+                }
+            }
+
+            tx = 2 * Math.Cos(dblGocChay * PI / 180);
+            x = x + (int)tx;
+
+            if (x < 0)
+            {
+                x = 0;
+            }
+            else if (x >= Xmax)
+            {
+                x = Xmax - 1;
+            }
+
+            ty = 2 * Math.Sin(dblGocChay * PI / 180);
+            y = y + (int)ty;
+
+            if (y < 0)
+            {
+                y = 0;
+            }
+            else if (y >= Ymax)
+            {
+                y = Ymax - 1;
+            }
+
+            if (x == 0 && y == 0)
+            {
+                AdjustAngle(dblGocChay + 45);
+            }
+            else if (x == 0 && y == Ymax - 1)
+            {
+                AdjustAngle(dblGocChay + 45);
+            }
+            else if (x == Xmax - 1 && y == 0)
+            {
+                AdjustAngle(dblGocChay + 45);
+            }
+            else if (x == Xmax - 1 && y == Ymax - 1)
+            {
+                AdjustAngle(dblGocChay + 45);
+            }
+
+            Pos.X = (int)x;
+            Pos.Y = (int)y;
+        }
+    }
+}
+
+
+
+
+
+
+
+
