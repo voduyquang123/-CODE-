@@ -1,0 +1,325 @@
+using System;
+
+namespace BaiTap2
+{
+    class IntArray
+    {
+        private int[] arr;
+
+        public IntArray()
+        {
+        }
+
+        public IntArray(int n)
+        {
+            arr = new int[n];
+            Random rand = new Random();
+            for (int i = 0; i < n; i++)
+            {
+                arr[i] = rand.Next(1, 101); // Tạo mảng ngẫu nhiên từ 1 đến 100
+            }
+        }
+
+        public IntArray(IntArray obj)
+        {
+            arr = new int[obj.arr.Length];
+            for (int i = 0; i < obj.arr.Length; i++)
+            {
+                arr[i] = obj.arr[i];
+            }
+        }
+
+        public void HoanVi(ref int a, ref int b)
+        {
+            int tam = a;
+            a = b;
+            b = tam;
+        }
+
+        public void InterchangeSort()
+        {
+            int n = arr.Length;
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = i + 1; j < n; j++)
+                {
+                    if (arr[i] > arr[j])
+                    {
+                        HoanVi(ref arr[i], ref arr[j]);
+                    }
+                }
+            }
+        }
+
+        public void InsertionSort()
+        {
+            int n = arr.Length;
+            for (int i = 1; i < n; i++)
+            {
+                int key = arr[i];
+                int j = i - 1;
+
+                while (j >= 0 && arr[j] > key)
+                {
+                    arr[j + 1] = arr[j];
+                    j = j - 1;
+                }
+                arr[j + 1] = key;
+            }
+        }
+
+        public void BubbleSort()
+        {
+            int n = arr.Length;
+            for (int i = 0; i < n - 1; i++)
+            {
+                for (int j = 0; j < n - i - 1; j++)
+                {
+                    if (arr[j] > arr[j + 1])
+                    {
+                        HoanVi(ref arr[j], ref arr[j + 1]);
+                    }
+                }
+            }
+        }
+
+        public void SelectionSort()
+        {
+            int n = arr.Length;
+            for (int i = 0; i < n - 1; i++)
+            {
+                int minIndex = i;
+                for (int j = i + 1; j < n; j++)
+                {
+                    if (arr[j] < arr[minIndex])
+                    {
+                        minIndex = j;
+                    }
+                }
+                HoanVi(ref arr[i], ref arr[minIndex]);
+            }
+        }
+
+        public void QuickSort(int left, int right)
+        {
+            if (left < right)
+            {
+                int pivot = Partition(left, right);
+
+                if (pivot > 1)
+                {
+                    QuickSort(left, pivot - 1);
+                }
+                if (pivot + 1 < right)
+                {
+                    QuickSort(pivot + 1, right);
+                }
+            }
+        }
+
+        private int Partition(int left, int right)
+        {
+            int pivot = arr[left];
+            while (true)
+            {
+                while (arr[left] < pivot)
+                {
+                    left++;
+                }
+                while (arr[right] > pivot)
+                {
+                    right--;
+                }
+                if (left < right)
+                {
+                    if (arr[left] == arr[right]) return right;
+                    HoanVi(ref arr[left], ref arr[right]);
+                }
+                else
+                {
+                    return right;
+                }
+            }
+        }
+
+        public void ShellSort()
+        {
+            int n = arr.Length;
+            int gap = n / 2;
+            while (gap > 0)
+            {
+                for (int i = gap; i < n; i++)
+                {
+                    int temp = arr[i];
+                    int j = i;
+                    while (j >= gap && arr[j - gap] > temp)
+                    {
+                        arr[j] = arr[j - gap];
+                        j -= gap;
+                    }
+                    arr[j] = temp;
+                }
+                gap /= 2;
+            }
+        }
+
+        public void ShakerSort()
+        {
+            int left = 0;
+            int right = arr.Length - 1;
+            while (left < right)
+            {
+                for (int i = left; i < right; i++)
+                {
+                    if (arr[i] > arr[i + 1])
+                    {
+                        HoanVi(ref arr[i], ref arr[i + 1]);
+                    }
+                }
+                right--;
+                for (int i = right; i > left; i--)
+                {
+                    if (arr[i] < arr[i - 1])
+                    {
+                        HoanVi(ref arr[i], ref arr[i - 1]);
+                    }
+                }
+                left++;
+            }
+        }
+
+        public void MergeSort()
+        {
+            MergeSort(0, arr.Length - 1);
+        }
+
+        private void MergeSort(int left, int right)
+        {
+            if (left < right)
+            {
+                int middle = (left + right) / 2;
+                MergeSort(left, middle);
+                MergeSort(middle + 1, right);
+                Merge(left, middle, right);
+            }
+        }
+
+        private void Merge(int left, int middle, int right)
+        {
+            int n1 = middle - left + 1;
+            int n2 = right - middle;
+
+            int[] leftArray = new int[n1];
+            int[] rightArray = new int[n2];
+
+            for (int i = 0; i < n1; i++)
+            {
+                leftArray[i] = arr[left + i];
+            }
+            for (int j = 0; j < n2; j++)
+            {
+                rightArray[j] = arr[middle + 1 + j];
+            }
+
+            int x = 0, y = 0;
+            int k = left;
+
+            while (x < n1 && y < n2)
+            {
+                if (leftArray[x] <= rightArray[y])
+                {
+                    arr[k] = leftArray[x];
+                    x++;
+                }
+                else
+                {
+                    arr[k] = rightArray[y];
+                    y++;
+                }
+                k++;
+            }
+
+            while (x < n1)
+            {
+                arr[k] = leftArray[x];
+                x++;
+                k++;
+            }
+
+            while (y < n2)
+            {
+                arr[k] = rightArray[y];
+                y++;
+                k++;
+            }
+        }
+
+        public void Xuat()
+        {
+            foreach (int value in arr)
+            {
+                Console.Write(value + " ");
+            }
+            Console.WriteLine();
+        }
+    }
+
+    class Program
+    {
+        static void TestSortingMethods(IntArray obj)
+        {
+            // Copy obj sang objTam để sắp xếp
+            IntArray objTam = new IntArray(obj);
+            Console.WriteLine("\n>>Mang ban dau:");
+            objTam.Xuat();
+
+            Console.WriteLine("\n>>Interchange Sort:");
+            objTam.InterchangeSort();
+            objTam.Xuat();
+
+            Console.WriteLine("\n>>Insertion Sort:");
+            objTam = new IntArray(obj);
+            objTam.InsertionSort();
+            objTam.Xuat();
+
+            Console.WriteLine("\n>>Bubble Sort:");
+            objTam = new IntArray(obj);
+            objTam.BubbleSort();
+            objTam.Xuat();
+
+            Console.WriteLine("\n>>Selection Sort:");
+            objTam = new IntArray(obj);
+            objTam.SelectionSort();
+            objTam.Xuat();
+
+            Console.WriteLine("\n>>Quick Sort:");
+            objTam = new IntArray(obj);
+            objTam.QuickSort(0, objTam.arr.Length - 1);
+            objTam.Xuat();
+
+            Console.WriteLine("\n>>Shell Sort:");
+            objTam = new IntArray(obj);
+            objTam.ShellSort();
+            objTam.Xuat();
+
+            Console.WriteLine("\n>>Shaker Sort:");
+            objTam = new IntArray(obj);
+            objTam.ShakerSort();
+            objTam.Xuat();
+
+            Console.WriteLine("\n>>Merge Sort:");
+            objTam = new IntArray(obj);
+            objTam.MergeSort();
+            objTam.Xuat();
+        }
+
+        static void Main(string[] args)
+        {
+            Console.Write("Nhap so luong phan tu: ");
+            int n = int.Parse(Console.ReadLine());
+
+            IntArray obj = new IntArray(n);
+            TestSortingMethods(obj);
+        }
+    }
+}
