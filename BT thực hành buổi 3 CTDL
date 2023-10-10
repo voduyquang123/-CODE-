@@ -1,0 +1,144 @@
+RemoveAt(int i): Xóa node tại vị trí thứ i (thứ tự node được tính bắt đầu từ 0)
+C#
+public void RemoveAt(int i)
+{
+    if (i < 0 || i >= Count)
+        return;
+
+    if (i == 0)
+    {
+        if (Count == 1)
+        {
+            first = last = null;
+            return;
+        }
+        else
+        {
+            first = first.Next;
+            return;
+        }
+    }
+
+    IntNode p = first;
+    for (int j = 0; j < i - 1; j++)
+        p = p.Next;
+
+    IntNode q = p.Next;
+    p.Next = q.Next;
+
+    if (i == Count - 1)
+        last = p;
+
+    q.Next = null;
+}
+
+
+
+RemoveX(): Xóa node có giá trị x
+C#
+public void RemoveX(int x)
+{
+    IntNode p = first;
+    while (p != null)
+    {
+        if (p.Data == x)
+        {
+            if (p == first)
+                RemoveAt(0);
+            else if (p == last)
+            {
+                RemoveAt(Count - 1);
+            }
+            else
+            {
+                IntNode q = p.Next;
+                p.Next = q.Next;
+
+                if (q == last)
+                    last = p;
+
+                q.Next = null;
+            }
+            return;
+        }
+        p = p.Next;
+    }
+}
+
+
+InsertAt(int x, int i): Chèn x vào danh sách tại vị trí thứ i (thứ tự node được tính bắt đầu từ 0)
+C#
+public void InsertAt(int x, int i)
+{
+    if (i < 0 || i > Count)
+        return;
+
+    if (i == 0)
+        AddFirst(x);
+    else if (i == Count)
+        AddLast(x);
+    else
+    {
+        IntNode p = first;
+        for (int j = 0; j < i - 1; j++)
+            p = p.Next;
+
+        IntNode newNode = new IntNode(x);
+        newNode.Next = p.Next;
+        p.Next = newNode;
+    }
+}
+
+
+
+InsertXAfterMin(): Chèn x vào sau node có giá trị nhỏ nhất
+C#
+public void InsertXAfterMin(int x)
+{
+    IntNode minNode = GetMin();
+    InsertAt(x, minNode.Next);
+}
+
+
+InsertXAfterY(): Chèn x vào sau node có giá trị y
+C#
+public void InsertXAfterY(int x, int y)
+{
+    IntNode yNode = GetNodeByValue(y);
+    if (yNode == null)
+        return;
+
+    InsertAt(x, yNode.Next);
+}
+
+
+
+InsertXBeforeMax(): Chèn x vào trước node có giá trị lớn nhất
+C#
+public void InsertXBeforeMax(int x)
+{
+    IntNode maxNode = GetMax();
+    InsertAt(x, maxNode);
+}
+
+
+
+InsertXBeforeY(): Chèn x vào trước node có giá trị y
+C#
+public void InsertXBeforeY(int x, int y)
+{
+    IntNode yNode = GetNodeByValue(y);
+    if (yNode == null)
+        return;
+
+    InsertAt(x, yNode);
+}
+
+
+RShiftRight(): Trả về danh sách sau khi dịch phải xoay vòng (Các node dịch về phải và node cuối cùng trở thành node đầu tiên của danh sách)
+C#
+public MyList RShiftRight()
+{
+    if (Count <= 1)
+        return this;
+}        
