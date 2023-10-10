@@ -142,3 +142,151 @@ public MyList RShiftRight()
     if (Count <= 1)
         return this;
 }        
+
+
+
+RShiftRight(): Trả về danh sách sau khi dịch phải xoay vòng (Các node dịch về phải và node cuối cùng trở thành node đầu tiên của danh sách)
+C#
+public MyList RShiftRight()
+{
+    if (Count <= 1)
+        return this;
+
+    IntNode lastNode = last;
+    IntNode p = first;
+    while (p.Next != lastNode)
+    {
+        p = p.Next;
+    }
+
+    lastNode.Next = first;
+    first = lastNode;
+    last = p;
+
+    return this;
+}
+
+
+InterchangeSort(): Sắp xếp danh sách theo thứ tự các giá trị tăng dần dùng phương pháp đổi chổ trực tiếp (Interchange sort).
+C#
+public void InterchangeSort()
+{
+    for (int i = 0; i < Count - 1; i++)
+    {
+        for (int j = i + 1; j < Count; j++)
+        {
+            if (first.Data > first.Next.Data)
+            {
+                int temp = first.Data;
+                first.Data = first.Next.Data;
+                first.Next.Data = temp;
+            }
+        }
+    }
+}
+
+
+
+SelectionSort(): Sắp xếp danh sách theo thứ tự giảm dần các giá trị trong danh sách bằng phương pháp chọn trực tiếp (Selection sort).
+C#
+public void SelectionSort()
+{
+    for (int i = 0; i < Count - 1; i++)
+    {
+        int minIndex = i;
+        for (int j = i + 1; j < Count; j++)
+        {
+            if (first.Data < first.Next.Data)
+            {
+                minIndex = j;
+            }
+        }
+
+        if (minIndex != i)
+        {
+            int temp = first.Data;
+            first.Data = first.Next.Data;
+            first.Next.Data = temp;
+        }
+    }
+}
+
+
+
+
+static void Main(string[] args)
+{
+    Console.WriteLine("Danh sách liên kết đơn số nguyên");
+
+    MyList list = new MyList();
+
+    while (true)
+    {
+        Console.WriteLine("1. Nhập danh sách");
+        Console.WriteLine("2. Xóa node tại vị trí");
+        Console.WriteLine("3. Xóa node có giá trị");
+        Console.WriteLine("4. Chèn node vào vị trí");
+        Console.WriteLine("5. Chèn node sau node có giá trị x");
+        Console.WriteLine("6. Chèn node trước node có giá trị x");
+        Console.WriteLine("7. Duyệt danh sách");
+        Console.WriteLine("8. Sắp xếp danh sách tăng dần");
+        Console.WriteLine("9. Sắp xếp danh sách giảm dần");
+        Console.WriteLine("0. Thoát");
+
+        int choice = int.Parse(Console.ReadLine());
+
+        switch (choice)
+        {
+            case 1:
+                list.Input();
+                break;
+            case 2:
+                Console.Write("Nhập vị trí cần xóa: ");
+                int i = int.Parse(Console.ReadLine());
+                list.RemoveAt(i);
+                break;
+            case 3:
+                Console.Write("Nhập giá trị cần xóa: ");
+                int x = int.Parse(Console.ReadLine());
+                list.RemoveX(x);
+                break;
+            case 4:
+                Console.Write("Nhập giá trị cần chèn: ");
+                int x = int.Parse(Console.ReadLine());
+                Console.Write("Nhập vị trí cần chèn: ");
+                int i = int.Parse(Console.ReadLine());
+                list.InsertAt(x, i);
+                break;
+            case 5:
+                Console.Write("Nhập giá trị cần chèn: ");
+                int x = int.Parse(Console.ReadLine());
+                Console.Write("Nhập giá trị node có giá trị x: ");
+                int y = int.Parse(Console.ReadLine());
+                list.InsertXAfterY(x, y);
+                break;
+            case 6:
+                Console.Write("Nhập giá trị cần chèn: ");
+                int x = int.Parse(Console.ReadLine());
+                Console.Write("Nhập giá trị node có giá trị x: ");
+                int y = int.Parse(Console.ReadLine());
+                list.InsertXBeforeY(x, y);
+                break;
+            case 7:
+                list.ShowList();
+                break;
+            case 8:
+                list.InterchangeSort();
+                list.ShowList();
+                break;
+            case 9:
+                list.SelectionSort();
+                list.ShowList();
+                break;
+            case 0:
+                return;
+            default:
+                Console.WriteLine("Lựa chọn không hợp lệ!");
+                break;
+        }
+    }
+}
